@@ -219,7 +219,7 @@ int main()
 	}
 
 	file_name[0] = '\0';
-	while (!is_file_fn(file_name))
+	while (!is_present(file_name))
 	{
 		printf("Enter the name of the file or folder you want to");
 		if (flag)
