@@ -125,10 +125,21 @@ void create_folder_at_location()
 	int file = mkdir(file_name, 0777);
 }
 
+void writing_to_file(){
+	char str[100];
+	FILE * file = fopen(file_name, "w");
+	getchar();
+	gets(str);
+	fputs(str, file);
+	fclose(file);
+}
+
 void create_file_at_location()
 {
 	int file = open(file_name, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	write(file, file_buffer, sizeof(char) * file_buffer_size);
+	printf("Enter file data: \n");
+	writing_to_file();
 	close(file);
 }
 
@@ -202,14 +213,15 @@ int main()
 	if (choice == 'D' || choice == 'd')
 	{
 		flag = 1;
+		printf("Enter the name of the directory you want to create: ");
 	}
 	else
 	{
 		flag = 0;
+		printf("Enter the name of the file you want to create: ");
 	}
 
 	file_name[0] = '\0';
-	printf("Enter the name of the file or folder you want to create: ");
 	scanf(" %s", file_name);
 	save_file_to_buffer(file_name);
 	out_dir[0] = '\0';
