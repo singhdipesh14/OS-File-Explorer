@@ -151,6 +151,60 @@ void save_files(char const *dir_name)
 	closedir(cur_dir);
 }
 
+void yellow(){
+	printf("\033[0;33m");
+}
+
+void resetColor(){
+	printf("\033[0m");
+}
+
+void green(){
+	printf("\033[0;32m");
+}
+
+void display(char const *dir_name){
+	system("clear");
+	printf("\n\n ***************************************** FILE EXPLORER *****************************************\n\n");
+    DIR *cur_dir = opendir(dir_name);
+    struct dirent *myfile;
+    struct stat mystat;
+    int cnt = 0;
+    char *dirFlag;
+	printf("\n\n          Name        Size          Permissions           Last Modified Time \n\n");
+	printf("\n\n  -------------------------------------FOLDERS---------------------------------------------------\n\n");
+	yellow();
+    while((myfile = readdir(cur_dir)) != NULL){
+        dirFlag = (char *)calloc(1, sizeof(char));
+        bzero(&mystat, sizeof(mystat));
+        stat(myfile->d_name, &mystat);
+        if(S_ISDIR(mystat.st_mode)){
+
+			printf("\t\n%15s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
+
+        }
+    }
+	resetColor();
+	printf("\n\n  --------------------------------------FILES--------------------------------------------------\n\n");
+	cur_dir = opendir(dir_name);
+	green();
+	while((myfile = readdir(cur_dir)) != NULL){
+        dirFlag = (char *)calloc(1, sizeof(char));
+        bzero(&mystat, sizeof(mystat));
+        stat(myfile->d_name, &mystat);
+        if(S_ISDIR(mystat.st_mode)){
+			continue;
+		}
+		else{
+
+			printf("\n%15s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
+
+        }
+    }
+	resetColor();
+	printf("\n\n  ---------------------------------------------------------------------------------------------\n\n");
+}
+
 int is_file_fn(char const *file_name)
 {
 	for (int i = 0; i < files_count; i++)
@@ -244,7 +298,8 @@ void save_file_to_buffer(char const *file_name)
 
 void delete_file(char const *file_name)
 {
-	unlink(file_name);
+	//unlink(file_name);
+	remove(file_name);
 }
 
 int main()
