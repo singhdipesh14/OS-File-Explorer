@@ -12,122 +12,15 @@
 char **files, out_dir[30], current_dir[30], *file_buffer, file_name[30];
 int files_count, flag, file_buffer_size;
 
-char const *sperm(__mode_t mode)
-{
-	static char local_buff[16] = {0};
-	int i = 0;
-	// user permissions
-	if (S_ISDIR(mode))
-	{
-		local_buff[i] = 'd';
-	}
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IRUSR) == S_IRUSR)
-		local_buff[i] = 'r';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IWUSR) == S_IWUSR)
-		local_buff[i] = 'w';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IXUSR) == S_IXUSR)
-		local_buff[i] = 'x';
-	else
-		local_buff[i] = '-';
-	i++;
-	// group permissions
-	if ((mode & S_IRGRP) == S_IRGRP)
-		local_buff[i] = 'r';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IWGRP) == S_IWGRP)
-		local_buff[i] = 'w';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IXGRP) == S_IXGRP)
-		local_buff[i] = 'x';
-	else
-		local_buff[i] = '-';
-	i++;
-	// other permissions
-	if ((mode & S_IROTH) == S_IROTH)
-		local_buff[i] = 'r';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IWOTH) == S_IWOTH)
-		local_buff[i] = 'w';
-	else
-		local_buff[i] = '-';
-	i++;
-	if ((mode & S_IXOTH) == S_IXOTH)
-		local_buff[i] = 'x';
-	else
-		local_buff[i] = '-';
-	return local_buff;
-}
-
-void save_files(char const *dir_name)
-{
-	DIR *cur_dir = opendir(dir_name);
-	struct dirent *myfile;
-	struct stat mystat;
-	int cnt = 0;
-	printf("\n\n");
-	while ((myfile = readdir(cur_dir)) != NULL)
-	{
-		files[cnt] = (char *)calloc(strlen(myfile->d_name) + 1, sizeof(char));
-		strcpy(files[cnt], myfile->d_name);
-		bzero(&mystat, sizeof(mystat));
-		stat(myfile->d_name, &mystat);
-		printf("%10.10s", sperm(mystat.st_mode));
-		printf("\t%d", mystat.st_uid);
-		printf("\t%ld", mystat.st_size);
-		printf("\t%s", myfile->d_name);
-		printf("\t%s", ctime(&mystat.st_mtime));
-		cnt++;
-		if (cnt >= files_count)
-		{
-			files_count *= 2;
-			files = (char **)realloc(files, files_count * sizeof(char *));
-		}
-	}
-	printf("\n\n");
-	files_count = cnt;
-	closedir(cur_dir);
-}
-
-int is_file_fn(char const *file_name)
-{
-	for (int i = 0; i < files_count; i++)
-	{
-		if (strcmp(files[i], file_name) == 0)
-		{
-			struct stat stat_var;
-			stat(file_name, &stat_var);
-			if (S_ISDIR(stat_var.st_mode))
-			{
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
 void create_folder_at_location()
 {
 	int file = mkdir(file_name, 0777);
 }
 
-void writing_to_file(){
+void writing_to_file()
+{
 	char str[100];
-	FILE * file = fopen(file_name, "w");
+	FILE *file = fopen(file_name, "w");
 	getchar();
 	gets(str);
 	fputs(str, file);
@@ -163,10 +56,7 @@ void recur()
 	}
 	if (strcmp(out_dir, "-1") == 0)
 	{
-		if(flag)
-		create_folder_at_location();
-		else
-		create_file_at_location();
+
 		return;
 	}
 	strcpy(current_dir, out_dir);
@@ -176,24 +66,6 @@ void recur()
 	recur();
 	chdir("..");
 	save_files(".");
-}
-
-void save_file_to_buffer(char const *file_name)
-{
-	int file = open(file_name, O_RDONLY);
-	file_buffer = (char *)calloc(30, sizeof(char));
-	int size = 30;
-	char c;
-	while (read(file, &c, sizeof(c)) > 0)
-	{
-		file_buffer[file_buffer_size++] = c;
-		if (file_buffer_size >= size)
-		{
-			size *= 2;
-			file_buffer = (char *)realloc(file_buffer, size * sizeof(char));
-		}
-	}
-	close(file);
 }
 
 int main()
@@ -226,6 +98,10 @@ int main()
 	save_file_to_buffer(file_name);
 	out_dir[0] = '\0';
 	strcpy(current_dir, ".");
+	if (flag)
+		create_folder_at_location();
+	else
+		create_file_at_location();
 	recur();
 	free(file_buffer);
 	for (int i = 0; i < files_count; i++)
