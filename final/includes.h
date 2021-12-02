@@ -12,21 +12,54 @@
 #include <dirent.h>
 #include <assert.h>
 
-static char **files, out_dir[256], current_dir[256], *file_buffer, file_name[30], going_back_dir[256];
-;
-static int files_count = 0, flag = 0, file_buffer_size = 0, going_back = 0, stackSz = 0;
+/* Global Static Files */
+
+// buffers
+static char **files, out_dir[256], current_dir[256], file_name[256], going_back_dir[256], input_buffer[256], *file_buffer;
+
+// counters
+static int files_count = 0, flag = 0, going_back = 0, stackSz = 0, file_buffer_size = 30;
+
+// structure for stack
 typedef struct stack
 {
 	char *val;
 	struct stack *next;
 } * Stack;
 
+// global stack instance
 static Stack st = NULL;
+
+/* Function Definitions */
+
+// display
 int display();
-void hello_world(char const *file_name);
+
+// file checking functions
+int is_file_fn(char const *);
+int is_folder_fn(char const *);
+int is_present(char const *);
+
+// files saving functions
+void save_files();
+
+// delete
+void delete_fn(char const *);
+
+// create
+void create_folder_at_location(char const *);
+void create_file_at_location(char const *);
 int create();
-int change_permissions(char const *file_name, char const *modes);
-void find_file(char *dir, const char *file_name, int *cnt, int depth);
+
+// permissions
+int change_permissions(char const *, char const *);
+
+// find file
+void find_file(char *, const char *, int *, int);
+
+// copy/move and paste
 int copy_paste();
-void preview(char const *file_name);
+
+// preview
+void preview(char const *);
 #endif

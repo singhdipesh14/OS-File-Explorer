@@ -25,66 +25,39 @@ char *delete_stack()
 	return retur;
 }
 
-int is_present(char const *file_name)
-{
-	for (int i = 0; i < files_count; i++)
-	{
-		if (strcmp(files[i], file_name) == 0)
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void save_files(char const *dir_name)
-{
-	DIR *cur_dir = opendir(dir_name);
-	struct dirent *myfile;
-	int cnt = 0;
-	while ((myfile = readdir(cur_dir)) != NULL)
-	{
-		files[cnt] = (char *)calloc(strlen(myfile->d_name) + 1, sizeof(char));
-		strcpy(files[cnt], myfile->d_name);
-		cnt++;
-		if (cnt >= files_count)
-		{
-			files_count *= 2;
-			files = (char **)realloc(files, files_count * sizeof(char *));
-		}
-	}
-	files_count = cnt;
-	closedir(cur_dir);
-}
-
-int is_file_fn(char const *file_name)
-{
-	for (int i = 0; i < files_count; i++)
-	{
-		if (strcmp(files[i], file_name) == 0)
-		{
-			struct stat stat_var;
-			stat(file_name, &stat_var);
-			if (S_ISDIR(stat_var.st_mode))
-			{
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
 void save_file_to_location()
 {
 	int file = open(file_name, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	write(file, file_buffer, sizeof(char) * file_buffer_size);
+	free(file_buffer);
+	close(file);
+}
+
+void save_file_to_buffer()
+{
+	int file = open(file_name, O_RDONLY);
+	int size = 30;
+	file_buffer = (char *)calloc(30, sizeof(char));
+	file_buffer_size = 30;
+	char c;
+	while (read(file, &c, sizeof(c)) > 0)
+	{
+		file_buffer[(file_buffer_size++)] = c;
+		if (file_buffer_size >= size)
+		{
+			size *= 2;
+			file_buffer = (char *)realloc(file_buffer, size * sizeof(char));
+		}
+	}
 	close(file);
 }
 
 void recur()
 {
 	out_dir[0] = '\0';
-	while (strcmp(out_dir, "-1") != 0 && !is_file_fn(out_dir))
+	int i = 0;
+	char c = 0;
+	while (strcmp(out_dir, "-1") != 0 && !is_folder_fn(out_dir))
 	{
 		printf(" - Where do you want to");
 		if (flag)
@@ -96,7 +69,21 @@ void recur()
 			printf(" copy?");
 		}
 		printf(" (-1 for current directory or directory name to explore) : ");
-		scanf(" %s", out_dir);
+		c = 0;
+		i = 0;
+		while (c != '\n')
+		{
+			scanf("%c", &c);
+			if (c == '\n' || i == 100)
+			{
+				break;
+			}
+			else
+			{
+				out_dir[i++] = c;
+			}
+		}
+		out_dir[i] = '\0';
 	}
 	if (strcmp(out_dir, "-1") == 0)
 	{
@@ -115,7 +102,7 @@ void recur()
 	chdir(out_dir);
 	getcwd(going_back_dir, sizeof(going_back_dir));
 	strcpy(current_dir, going_back_dir);
-	save_files(current_dir);
+	save_files();
 	display();
 	out_dir[0] = '\0';
 	recur();
@@ -123,44 +110,21 @@ void recur()
 	{
 		chdir(delete_stack());
 	}
-	else
-	{
-		exit(EXIT_FAILURE);
-	}
-	save_files(".");
-}
-
-void save_file_to_buffer(char const *file_name)
-{
-	int file = open(file_name, O_RDONLY);
-	file_buffer = (char *)calloc(30, sizeof(char));
-	int size = 30;
-	char c;
-	while (read(file, &c, sizeof(c)) > 0)
-	{
-		file_buffer[file_buffer_size++] = c;
-		if (file_buffer_size >= size)
-		{
-			size *= 2;
-			file_buffer = (char *)realloc(file_buffer, size * sizeof(char));
-		}
-	}
-	close(file);
+	save_files();
 }
 
 int copy_paste()
 {
 	char choice;
-	files = (char **)calloc(30, sizeof(char *));
-	files_count = 30;
 	int cnt = 0;
+
 	getcwd(going_back_dir, sizeof(going_back_dir));
-	save_files(going_back_dir);
-	display();
+	save_files();
 	do
 	{
 		printf("Do you want to copy or move? (C - copy, M - move) : ");
-		scanf(" %c", &choice);
+		scanf("%c", &choice);
+		getchar();
 	} while (choice != 'M' && choice != 'm' && choice != 'C' && choice != 'c');
 
 	if (choice == 'M' || choice == 'm')
@@ -171,11 +135,12 @@ int copy_paste()
 	{
 		flag = 0;
 	}
-
+	int i = 0;
+	char c = 0;
 	file_name[0] = '\0';
-	while (!is_present(file_name))
+	while (!is_file_fn(file_name))
 	{
-		printf("Enter the name of the file or folder you want to");
+		printf("Enter the name of the file you want to");
 		if (flag)
 		{
 			printf(" move : ");
@@ -184,22 +149,29 @@ int copy_paste()
 		{
 			printf(" copy : ");
 		}
-		scanf(" %s", file_name);
+		c = 0;
+		i = 0;
+		while (c != '\n')
+		{
+			scanf("%c", &c);
+			if (c == '\n' || i == 100)
+			{
+				break;
+			}
+			else
+			{
+				file_name[i++] = c;
+			}
+		}
+		file_name[i] = '\0';
 	}
-	save_file_to_buffer(file_name);
-
+	save_file_to_buffer();
 	out_dir[0] = '\0';
 	strcpy(current_dir, going_back_dir);
 	recur();
 	if (flag)
 	{
-		hello_world(file_name);
+		delete_fn(file_name);
 	}
-	free(file_buffer);
-	for (int i = 0; i < files_count; i++)
-	{
-		free(files[i]);
-	}
-	free(files);
 	return 0;
 }

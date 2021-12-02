@@ -1,7 +1,7 @@
 run: main.o
-	gcc -o run main.o display.o create.o find_file.o change_permissions.o copy_paste.o delete.o preview.o
+	gcc -o run main.o display.o create.o find_file.o change_permissions.o copy_paste.o delete.o preview.o utils.o
 
-main.o: delete.o display.o create.o copy_paste.o find_file.o change_permissions.o preview.o includes.h
+main.o: delete.o display.o create.o copy_paste.o find_file.o change_permissions.o preview.o includes.h utils.o
 	gcc -c main.c
 
 display.o : display.c includes.h
@@ -24,3 +24,6 @@ delete.o : delete.c includes.h display.o
 
 preview.o : preview.c includes.h
 	gcc -c preview.c
+
+utils.o : utils.c includes.h
+	gcc -c utils.c
