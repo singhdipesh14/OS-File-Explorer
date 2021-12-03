@@ -1,5 +1,6 @@
 #include "includes.h"
 
+/* insert into stack, at head */
 void insert_stack(char *buffer)
 {
 	Stack n = (Stack)malloc(sizeof(struct stack));
@@ -15,6 +16,9 @@ void insert_stack(char *buffer)
 	st = n;
 }
 
+/*  pop from the stack and return popped value.
+	checking for empty is done at function call
+	*/
 char *delete_stack()
 {
 	Stack n = st;
@@ -25,6 +29,7 @@ char *delete_stack()
 	return retur;
 }
 
+/* saving the file in the file buffer to the desired location */
 void save_file_to_location(char const *file_name)
 {
 	int file = open(file_name, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
@@ -33,10 +38,7 @@ void save_file_to_location(char const *file_name)
 	close(file);
 }
 
-void save_folder_to_location()
-{
-}
-
+/* save the contents of a file to the file buffer */
 void save_file_to_buffer()
 {
 	int file = open(file_name, O_RDONLY);
@@ -56,15 +58,16 @@ void save_file_to_buffer()
 	close(file);
 }
 
+/* recursive function for traversing folders to choose destination */
 void recur()
 {
-	out_dir[0] = '\0';
+	goto_dir[0] = '\0';
 	int i = 0;
 	char c = 0;
-	while (strcmp(out_dir, "-1") != 0 && !is_folder_fn(out_dir))
+	while (strcmp(goto_dir, "-1") != 0 && !is_folder_fn(goto_dir))
 	{
 		printf(" - Where do you want to");
-		if (flag)
+		if (options_flag)
 		{
 			printf(" move?");
 		}
@@ -84,12 +87,12 @@ void recur()
 			}
 			else
 			{
-				out_dir[i++] = c;
+				goto_dir[i++] = c;
 			}
 		}
-		out_dir[i] = '\0';
+		goto_dir[i] = '\0';
 	}
-	if (strcmp(out_dir, "-1") == 0)
+	if (strcmp(goto_dir, "-1") == 0)
 	{
 		if (is_folder)
 		{
@@ -124,21 +127,20 @@ void recur()
 		}
 		return;
 	}
-	else if (strcmp(out_dir, "..") == 0)
+	else if (strcmp(goto_dir, "..") == 0)
 	{
-		getcwd(going_back_dir, sizeof(going_back_dir));
-		insert_stack(going_back_dir);
+		getcwd(current_dir, sizeof(current_dir));
+		insert_stack(current_dir);
 	}
 	else
 	{
 		insert_stack("..");
 	}
-	chdir(out_dir);
-	getcwd(going_back_dir, sizeof(going_back_dir));
-	strcpy(current_dir, going_back_dir);
+	chdir(goto_dir);
+	getcwd(current_dir, sizeof(current_dir));
 	save_files();
 	display();
-	out_dir[0] = '\0';
+	goto_dir[0] = '\0';
 	recur();
 	if (st)
 	{
@@ -147,15 +149,16 @@ void recur()
 	save_files();
 }
 
+/* function menu */
 int copy_paste()
 {
 	char choice;
 	int cnt = 0;
 
-	getcwd(going_back_dir, sizeof(going_back_dir));
-	save_files();
+	getcwd(current_dir, sizeof(current_dir)); // saving current dir
+	save_files();							  // saving file names in buffer
 	do
-	{
+	{ // choosing operations
 		printf("Do you want to copy or move? (C - copy, M - move) : ");
 		scanf("%c", &choice);
 		getchar();
@@ -163,19 +166,19 @@ int copy_paste()
 
 	if (choice == 'M' || choice == 'm')
 	{
-		flag = 1;
+		options_flag = 1;
 	}
 	else
 	{
-		flag = 0;
+		options_flag = 0;
 	}
 	int i = 0;
 	char c = 0;
 	file_name[0] = '\0';
 	while (strcmp(file_name, "..") == 0 || strcmp(file_name, ".") == 0 || !is_present(file_name))
-	{
+	{ // input name of file or folder to be operated on
 		printf("Enter the name of the file or folder you want to");
-		if (flag)
+		if (options_flag)
 		{
 			printf(" move : ");
 		}
@@ -201,39 +204,34 @@ int copy_paste()
 	}
 	struct stat check_folder;
 	stat(file_name, &check_folder);
-	is_folder = S_ISDIR(check_folder.st_mode) ? 1 : 0;
+	is_folder = S_ISDIR(check_folder.st_mode) ? 1 : 0; // checking for folder
 	if (!is_folder)
-		save_file_to_buffer();
-	out_dir[0] = '\0';
-	strcpy(current_dir, going_back_dir);
-	recur();
+		save_file_to_buffer(); // save file to buffer
+	goto_dir[0] = '\0';
+	recur(); // traverse through the folder to select destination
 	if (is_folder)
 	{
 		char command[1000];
 		command[0] = '\0';
-		if (flag)
+		if (options_flag)
 		{
-			strcat(command, "mv ");
+			strcat(command, "mv "); // move command
 		}
 		else
 		{
-			strcat(command, "cp -r ");
+			strcat(command, "cp -r "); // copy command
 		}
 		strcat(command, file_name);
 		strcat(command, " \"");
 		strcat(command, save_folder_location_buffer);
 		strcat(command, "\"");
-		printf("%s\n", command);
-		getchar();
-		system(command);
-		printf("done\n");
-		getchar();
+		system(command); // running command
 	}
 	else
 	{
-		if (flag)
+		if (options_flag)
 		{
-			delete_fn(file_name);
+			delete_fn(file_name); // if move command, delete particular instance
 		}
 	}
 	return 0;
