@@ -45,10 +45,10 @@ int main()
 			copy_paste();
 			break;
 		case 3:
-			printf("\nEnter the file name to delete: ");
 			input_buffer[0] = '\0';
 			while (!is_present(input_buffer))
 			{
+				printf("\nEnter the file name to delete: ");
 				input_buffer[0] = '\0';
 				c = 0;
 				i = 0;
@@ -69,10 +69,10 @@ int main()
 			delete_fn(input_buffer);
 			break;
 		case 4:
-			printf("\nEnter the name of directory you want to explore: ");
 			input_buffer[0] = '\0';
 			while (!is_folder_fn(input_buffer))
 			{
+				printf("\nEnter the name of directory you want to explore: ");
 				c = 0;
 				i = 0;
 				while (c != '\n')
@@ -92,10 +92,10 @@ int main()
 			chdir(input_buffer);
 			break;
 		case 5:
-			printf("\nEnter the file name: ");
 			input_buffer[0] = '\0';
 			while (!is_present(input_buffer))
 			{
+				printf("\nEnter the file name: ");
 				c = 0;
 				i = 0;
 				while (c != '\n')
