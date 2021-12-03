@@ -114,7 +114,8 @@ int change_permissions(char const *pathname, char const *permission_string)
 		fprintf(stderr, "Invalid permission input\n");
 		return 1;
 	}
-	printf("Enter any key");
-	getchar();
+	printf("Press ENTER to continue.");
+	while (getchar() != '\n')
+		;
 	return 0;
 }

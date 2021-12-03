@@ -9,7 +9,8 @@ int main()
 		// // printf choices
 		printf("\n\n\t*******MENU*******\n\tPress :\n\t0 -> Find\n\t1 -> Create\n\t2 -> Copy and Paste\n\t3 -> Delete\n\t4 -> Exploring\n\t5 -> Change Permissions\n\t6 -> Preview File\n\t7 -> Exit \n\n\t----> ");
 		scanf("%d", &choice);
-		getchar();
+		while (getchar() != '\n')
+			;
 		int cnt = 0;
 		char c = 0;
 		int i = 0;
@@ -35,8 +36,9 @@ int main()
 			}
 			input_buffer[i] = '\0';
 			find_file(".", input_buffer, &cnt, 0);
-			printf("\nEnter any key to continue: ");
-			getchar();
+			printf("\nPress ENTER to continue: ");
+			while (getchar() != '\n')
+				;
 			break;
 		case 1:
 			create();
@@ -135,10 +137,10 @@ int main()
 			change_permissions(input_buffer, modes);
 			break;
 		case 6:
-			printf("\nEnter file name which you want to preview: ");
 			input_buffer[0] = '\0';
 			while (!is_file_fn(input_buffer))
 			{
+				printf("\nEnter file name which you want to preview: ");
 				c = 0;
 				i = 0;
 				while (c != '\n')
