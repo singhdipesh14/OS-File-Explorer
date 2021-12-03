@@ -15,13 +15,29 @@
 /* Global Static Files */
 
 // buffers
-static char **files, out_dir[256], current_dir[256], file_name[256], going_back_dir[256], input_buffer[256], *file_buffer, save_folder_location_buffer[256];
+static char **files // for file names in a dir
+	,
+	goto_dir[256] // input for change directory
+	,
+	current_dir[256] // buffer for current directory
+	,
+	file_name[256] // input for file names
+	,
+	input_buffer[256] // input for file names in main fn
+	,
+	*file_buffer // buffer for saving file content
+	,
+	save_folder_location_buffer[256]; // buffer for saving location
 
 // sizes
-static int files_count = 0, stackSz = 0, file_buffer_size = 30;
+static int files_count = 0 // number of files in a directory
+	,
+		   stackSz = 0 // number of items in stack
+	,
+		   file_buffer_size = 30; // number of bytes in file_buffer
 
 // flags
-static int flag = 0, is_folder = 0;
+static int options_flag = 0, is_folder = 0;
 
 // structure for stack
 typedef struct stack

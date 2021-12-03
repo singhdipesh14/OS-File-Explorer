@@ -12,12 +12,12 @@ int create()
 
 	if (choice == 'D' || choice == 'd')
 	{
-		flag = 1;
+		options_flag = 1;
 		printf("Enter the name of the directory you want to create: ");
 	}
 	else
 	{
-		flag = 0;
+		options_flag = 0;
 		printf("Enter the name of the file you want to create: ");
 	}
 	file_name[0] = '\0';
@@ -36,7 +36,7 @@ int create()
 		}
 	}
 	file_name[i] = '\0';
-	if (flag)
+	if (options_flag)
 		create_folder_at_location(file_name);
 	else
 		create_file_at_location(file_name);
