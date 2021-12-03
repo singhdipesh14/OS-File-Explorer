@@ -95,7 +95,7 @@ int display()
 	struct stat mystat;
 	int cnt = 0;
 	char *dirFlag;
-	printf("\n\n          Name        Size          Permissions           Last Modified Time \n\n");
+	printf("\n\n                     Name             Size          Permissions           Last Modified Time \n\n");
 	printf("\n\n  -------------------------------------FOLDERS---------------------------------------------------\n\n");
 	yellow();
 	while ((myfile = readdir(cur_dir)) != NULL)
@@ -106,7 +106,7 @@ int display()
 		if (S_ISDIR(mystat.st_mode))
 		{
 
-			printf("\t\n%15s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
+			printf("\t\n%25s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
 		}
 	}
 	resetColor();
@@ -125,7 +125,7 @@ int display()
 		else
 		{
 
-			printf("\n%15s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
+			printf("\n%25s\t%10ld\t%15s\t\t%15s", myfile->d_name, mystat.st_size, sperm(mystat.st_mode), ctime(&mystat.st_mtime));
 		}
 	}
 	resetColor();

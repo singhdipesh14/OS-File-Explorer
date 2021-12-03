@@ -118,6 +118,7 @@ int main()
 			// Input can be in form of string "rwxrw-r--"
 			// Input can be in form of (u/g/o)(+/-)(r/w/x)
 			// Input can be in form 0777
+			printf("\nFile Permission can be in the form of:\n-> String \"rwxrw-r--\"\n-> \"(u/g/o)(+/-)(r/w/x)\"\n-> \"0777\"\n\nEnter file permission: ");
 			char modes[30];
 			c = 0;
 			i = 0;
