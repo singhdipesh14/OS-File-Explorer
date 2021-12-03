@@ -15,10 +15,13 @@
 /* Global Static Files */
 
 // buffers
-static char **files, out_dir[256], current_dir[256], file_name[256], going_back_dir[256], input_buffer[256], *file_buffer;
+static char **files, out_dir[256], current_dir[256], file_name[256], going_back_dir[256], input_buffer[256], *file_buffer, save_folder_location_buffer[256];
 
-// counters
-static int files_count = 0, flag = 0, going_back = 0, stackSz = 0, file_buffer_size = 30;
+// sizes
+static int files_count = 0, stackSz = 0, file_buffer_size = 30;
+
+// flags
+static int flag = 0, is_folder = 0;
 
 // structure for stack
 typedef struct stack

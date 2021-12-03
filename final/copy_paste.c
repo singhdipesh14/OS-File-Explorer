@@ -25,12 +25,16 @@ char *delete_stack()
 	return retur;
 }
 
-void save_file_to_location()
+void save_file_to_location(char const *file_name)
 {
 	int file = open(file_name, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	write(file, file_buffer, sizeof(char) * file_buffer_size);
 	free(file_buffer);
 	close(file);
+}
+
+void save_folder_to_location()
+{
 }
 
 void save_file_to_buffer()
@@ -87,7 +91,37 @@ void recur()
 	}
 	if (strcmp(out_dir, "-1") == 0)
 	{
-		save_file_to_location();
+		if (is_folder)
+		{
+			getcwd(save_folder_location_buffer, sizeof(save_folder_location_buffer));
+		}
+		else
+		{
+			printf("Enter the file name or press ENTER to skip:");
+			char temp_name[100];
+			i = 0;
+			c = 0;
+			while (c != '\n')
+			{
+				scanf("%c", &c);
+				if (c == '\n' || i == 100)
+				{
+					break;
+				}
+				else
+				{
+					file_name[i++] = c;
+				}
+			}
+			if (strlen(temp_name) == 0)
+			{
+				save_file_to_location(temp_name);
+			}
+			else
+			{
+				save_file_to_location(file_name);
+			}
+		}
 		return;
 	}
 	else if (strcmp(out_dir, "..") == 0)
@@ -138,9 +172,9 @@ int copy_paste()
 	int i = 0;
 	char c = 0;
 	file_name[0] = '\0';
-	while (!is_file_fn(file_name))
+	while (strcmp(file_name, "..") == 0 || strcmp(file_name, ".") == 0 || !is_present(file_name))
 	{
-		printf("Enter the name of the file you want to");
+		printf("Enter the name of the file or folder you want to");
 		if (flag)
 		{
 			printf(" move : ");
@@ -165,13 +199,42 @@ int copy_paste()
 		}
 		file_name[i] = '\0';
 	}
-	save_file_to_buffer();
+	struct stat check_folder;
+	stat(file_name, &check_folder);
+	is_folder = S_ISDIR(check_folder.st_mode) ? 1 : 0;
+	if (!is_folder)
+		save_file_to_buffer();
 	out_dir[0] = '\0';
 	strcpy(current_dir, going_back_dir);
 	recur();
-	if (flag)
+	if (is_folder)
 	{
-		delete_fn(file_name);
+		char command[1000];
+		command[0] = '\0';
+		if (flag)
+		{
+			strcat(command, "mv ");
+		}
+		else
+		{
+			strcat(command, "cp -r ");
+		}
+		strcat(command, file_name);
+		strcat(command, " \"");
+		strcat(command, save_folder_location_buffer);
+		strcat(command, "\"");
+		printf("%s\n", command);
+		getchar();
+		system(command);
+		printf("done\n");
+		getchar();
+	}
+	else
+	{
+		if (flag)
+		{
+			delete_fn(file_name);
+		}
 	}
 	return 0;
 }
