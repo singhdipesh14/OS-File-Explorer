@@ -13,7 +13,7 @@ void preview(char const *file_name)
 			printf("%c", c);
 		}
 	}
-	printf("press enter to continue");
+	printf("\n\nPress Enter to continue: ");
 	getchar();
 	printf("\n\n");
 	fclose(finp);

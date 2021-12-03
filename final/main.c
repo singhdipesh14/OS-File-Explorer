@@ -7,7 +7,7 @@ int main()
 		display();
 		int choice = -1;
 		// // printf choices
-		printf("\n\nPress 0 for find, 1 for create, 2 for copy_paste, 3 for delete, 4 for exploring, 5 for change permissions, 6 for preview, 7 for exit : \n\n");
+		printf("\n\n\t*******MENU*******\n\tPress :\n\t0 -> Find\n\t1 -> Create\n\t2 -> Copy and Paste\n\t3 -> Delete\n\t4 -> Exploring\n\t5 -> Change Permissions\n\t6 -> Preview File\n\t7 -> Exit \n\n\t----> ");
 		scanf("%d", &choice);
 		getchar();
 		int cnt = 0;
@@ -18,7 +18,7 @@ int main()
 		{
 		case 0:
 
-			printf("Enter the file name: ");
+			printf("\nEnter the file name: ");
 			c = 0;
 			i = 0;
 			while (c != '\n')
@@ -35,7 +35,7 @@ int main()
 			}
 			input_buffer[i] = '\0';
 			find_file(".", input_buffer, &cnt, 0);
-			printf("enter any key");
+			printf("\nEnter any key to continue: ");
 			getchar();
 			break;
 		case 1:
@@ -45,7 +45,7 @@ int main()
 			copy_paste();
 			break;
 		case 3:
-			printf("Enter the file to delete: ");
+			printf("\nEnter the file name to delete: ");
 			input_buffer[0] = '\0';
 			while (!is_present(input_buffer))
 			{
@@ -69,7 +69,7 @@ int main()
 			delete_fn(input_buffer);
 			break;
 		case 4:
-			printf("Enter explore dir: ");
+			printf("\nEnter the name of directory you want to explore: ");
 			input_buffer[0] = '\0';
 			while (!is_folder_fn(input_buffer))
 			{
@@ -92,7 +92,7 @@ int main()
 			chdir(input_buffer);
 			break;
 		case 5:
-			printf("Enter file name: ");
+			printf("\nEnter the file name: ");
 			input_buffer[0] = '\0';
 			while (!is_present(input_buffer))
 			{
@@ -135,7 +135,7 @@ int main()
 			change_permissions(input_buffer, modes);
 			break;
 		case 6:
-			printf("enter file name to preview");
+			printf("\nEnter file name which you want to preview: ");
 			input_buffer[0] = '\0';
 			while (!is_file_fn(input_buffer))
 			{
